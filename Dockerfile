@@ -7,10 +7,21 @@ RUN go mod download
 
 COPY . .
 
-RUN go build -o main cmd/api/main.go
+# Build with debug symbols
+RUN go build -gcflags="all=-N -l" -o main cmd/api/main.go
 
-FROM alpine:3.20.1 AS prod
+# Install Delve
+RUN go install github.com/go-delve/delve/cmd/dlv@latest
+
+
+FROM golang:1.26.2-alpine AS debug
+
 WORKDIR /app
-COPY --from=build /app/main /app/main
-EXPOSE ${PORT}
-CMD ["./main"]
+
+COPY --from=build /app .
+COPY --from=build /go/bin/dlv /usr/local/bin/dlv
+
+EXPOSE 8080
+EXPOSE 40000
+
+CMD ["dlv", "--listen=:40000", "--headless=true", "--api-version=2", "--accept-multiclient", "exec", "./main"]

@@ -22,6 +22,10 @@ seed:
 wire:
 	@go run github.com/google/wire/cmd/wire@latest ./internal/di
 
+# Generate Swagger docs from handler annotations
+swagger:
+	@go run github.com/swaggo/swag/cmd/swag@latest init -g cmd/api/main.go -o docs --parseDependency --parseInternal
+
 # Run GORM auto-migrations
 migrate:
 	@go run cmd/migrate/main.go
@@ -101,4 +105,4 @@ watch:
             fi; \
         fi
 
-.PHONY: all build run test clean watch docker-run docker-down itest migrate wire seed
+.PHONY: all build run test clean watch docker-run docker-down itest migrate wire seed swagger

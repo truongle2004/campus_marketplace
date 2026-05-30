@@ -39,7 +39,7 @@ func (h *Handler) authUser(c *gin.Context) (*auth.User, bool) {
 //	@Failure		401		{object}	respond.ErrorBody
 //	@Failure		409		{object}	respond.ErrorBody
 //	@Failure		500		{object}	respond.ErrorBody
-//	@Router			/users/me/bootstrap [post]
+//	@Router			/api/v1/users/me/bootstrap [post]
 func (h *Handler) Bootstrap(c *gin.Context) {
 	authUser, ok := h.authUser(c)
 	if !ok {
@@ -80,7 +80,7 @@ func (h *Handler) Bootstrap(c *gin.Context) {
 //	@Failure		401	{object}	respond.ErrorBody
 //	@Failure		404	{object}	respond.ErrorBody
 //	@Failure		500	{object}	respond.ErrorBody
-//	@Router			/users/me [get]
+//	@Router			/api/v1/users/me [get]
 func (h *Handler) GetMe(c *gin.Context) {
 	authUser, ok := h.authUser(c)
 	if !ok {
@@ -113,7 +113,7 @@ func (h *Handler) GetMe(c *gin.Context) {
 //	@Failure		401		{object}	respond.ErrorBody
 //	@Failure		404		{object}	respond.ErrorBody
 //	@Failure		500		{object}	respond.ErrorBody
-//	@Router			/users/me [patch]
+//	@Router			/api/v1/users/me [patch]
 func (h *Handler) UpdateMe(c *gin.Context) {
 	authUser, ok := h.authUser(c)
 	if !ok {
@@ -152,7 +152,7 @@ func (h *Handler) UpdateMe(c *gin.Context) {
 //	@Failure		401	{object}	respond.ErrorBody
 //	@Failure		404	{object}	respond.ErrorBody
 //	@Failure		500	{object}	respond.ErrorBody
-//	@Router			/users/me [delete]
+//	@Router			/api/v1/users/me [delete]
 func (h *Handler) DeactivateMe(c *gin.Context) {
 	authUser, ok := h.authUser(c)
 	if !ok {

@@ -1,4 +1,106 @@
 basePath: /
+definitions:
+  github_com_truongle2004_campus_marketplace_pkg_respond.ErrorBody:
+    properties:
+      error:
+        type: string
+    type: object
+  internal_modules_campus.HealthResponse:
+    properties:
+      module:
+        example: campus
+        type: string
+      status:
+        example: ok
+        type: string
+    type: object
+  internal_modules_campus.Response:
+    properties:
+      city:
+        type: string
+      country:
+        type: string
+      created_at:
+        type: string
+      domain:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      slug:
+        type: string
+    type: object
+  internal_modules_category.Response:
+    properties:
+      icon_url:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      parent_id:
+        type: string
+      slug:
+        type: string
+      sort_order:
+        type: integer
+    type: object
+  internal_modules_user.BootstrapRequest:
+    properties:
+      campus_id:
+        type: string
+      full_name:
+        maxLength: 255
+        minLength: 1
+        type: string
+    required:
+    - campus_id
+    - full_name
+    type: object
+  internal_modules_user.ProfileResponse:
+    properties:
+      avatar_url:
+        type: string
+      campus_id:
+        type: string
+      created_at:
+        type: string
+      email:
+        type: string
+      full_name:
+        type: string
+      id:
+        type: string
+      is_active:
+        type: boolean
+      is_verified:
+        type: boolean
+      role:
+        $ref: '#/definitions/internal_modules_user.Role'
+      updated_at:
+        type: string
+    type: object
+  internal_modules_user.Role:
+    enum:
+    - student
+    - staff
+    - admin
+    type: string
+    x-enum-varnames:
+    - RoleStudent
+    - RoleStaff
+    - RoleAdmin
+  internal_modules_user.UpdateProfileRequest:
+    properties:
+      avatar_url:
+        maxLength: 2048
+        type: string
+      full_name:
+        maxLength: 255
+        minLength: 1
+        type: string
+    type: object
 host: localhost:8080
 info:
   contact: {}
@@ -6,7 +108,56 @@ info:
   title: Campus Marketplace API
   version: "1.0"
 paths:
-  /:
+  /api/v1/campuses:
+    get:
+      description: Returns all active campuses for onboarding and filtering.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/internal_modules_campus.Response'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_truongle2004_campus_marketplace_pkg_respond.ErrorBody'
+      summary: List active campuses
+      tags:
+      - campuses
+  /api/v1/campuses/{id}:
+    get:
+      parameters:
+      - description: Campus ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_modules_campus.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_truongle2004_campus_marketplace_pkg_respond.ErrorBody'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_truongle2004_campus_marketplace_pkg_respond.ErrorBody'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_truongle2004_campus_marketplace_pkg_respond.ErrorBody'
+      summary: Get campus by ID
+      tags:
+      - campuses
+  /api/v1/categories:
     get:
       produces:
       - application/json
@@ -14,24 +165,190 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Hello world
+            items:
+              $ref: '#/definitions/internal_modules_category.Response'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_truongle2004_campus_marketplace_pkg_respond.ErrorBody'
+      summary: List top-level categories
       tags:
-      - general
+      - categories
+  /api/v1/categories/{id}/children:
+    get:
+      parameters:
+      - description: Parent category ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/internal_modules_category.Response'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_truongle2004_campus_marketplace_pkg_respond.ErrorBody'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_truongle2004_campus_marketplace_pkg_respond.ErrorBody'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_truongle2004_campus_marketplace_pkg_respond.ErrorBody'
+      summary: List subcategories by parent
+      tags:
+      - categories
+  /api/v1/users/me:
+    delete:
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_truongle2004_campus_marketplace_pkg_respond.ErrorBody'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_truongle2004_campus_marketplace_pkg_respond.ErrorBody'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_truongle2004_campus_marketplace_pkg_respond.ErrorBody'
+      security:
+      - BearerAuth: []
+      summary: Deactivate own account
+      tags:
+      - users
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_modules_user.ProfileResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_truongle2004_campus_marketplace_pkg_respond.ErrorBody'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_truongle2004_campus_marketplace_pkg_respond.ErrorBody'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_truongle2004_campus_marketplace_pkg_respond.ErrorBody'
+      security:
+      - BearerAuth: []
+      summary: View own profile
+      tags:
+      - users
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: Profile fields
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_modules_user.UpdateProfileRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_modules_user.ProfileResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_truongle2004_campus_marketplace_pkg_respond.ErrorBody'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_truongle2004_campus_marketplace_pkg_respond.ErrorBody'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_truongle2004_campus_marketplace_pkg_respond.ErrorBody'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_truongle2004_campus_marketplace_pkg_respond.ErrorBody'
+      security:
+      - BearerAuth: []
+      summary: Edit own profile
+      tags:
+      - users
+  /api/v1/users/me/bootstrap:
+    post:
+      consumes:
+      - application/json
+      description: Links Clerk identity to a campus profile (first-time setup).
+      parameters:
+      - description: Bootstrap payload
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_modules_user.BootstrapRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/internal_modules_user.ProfileResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_truongle2004_campus_marketplace_pkg_respond.ErrorBody'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_truongle2004_campus_marketplace_pkg_respond.ErrorBody'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/github_com_truongle2004_campus_marketplace_pkg_respond.ErrorBody'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_truongle2004_campus_marketplace_pkg_respond.ErrorBody'
+      security:
+      - BearerAuth: []
+      summary: Create app profile after Clerk sign-up
+      tags:
+      - users
   /health:
     get:
+      description: Returns API liveness status.
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/internal_modules_campus.HealthResponse'
       summary: Health check
       tags:
-      - general
+      - health
+securityDefinitions:
+  BearerAuth:
+    description: 'Clerk JWT. Format: Bearer {token}'
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

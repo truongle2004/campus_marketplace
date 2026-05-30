@@ -22,7 +22,7 @@ func NewHandler(service CategoryService) *Handler {
 //	@Produce		json
 //	@Success		200	{array}		Response
 //	@Failure		500	{object}	respond.ErrorBody
-//	@Router			/categories [get]
+//	@Router			/api/v1/categories [get]
 func (h *Handler) ListTopLevel(c *gin.Context) {
 	items, err := h.service.ListTopLevel(c.Request.Context())
 	if err != nil {
@@ -42,7 +42,7 @@ func (h *Handler) ListTopLevel(c *gin.Context) {
 //	@Failure		400	{object}	respond.ErrorBody
 //	@Failure		404	{object}	respond.ErrorBody
 //	@Failure		500	{object}	respond.ErrorBody
-//	@Router			/categories/{id}/children [get]
+//	@Router			/api/v1/categories/{id}/children [get]
 func (h *Handler) ListChildren(c *gin.Context) {
 	items, err := h.service.ListByParentID(c.Request.Context(), c.Param("id"))
 	if err != nil {
