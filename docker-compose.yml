@@ -3,10 +3,11 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      target: prod
+      target: debug
     restart: unless-stopped
     ports:
       - ${PORT}:${PORT}
+      - "40000:40000"
     environment:
       APP_ENV: ${APP_ENV}
       PORT: ${PORT}

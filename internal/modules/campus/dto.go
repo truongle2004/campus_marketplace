@@ -6,6 +6,11 @@ import (
 	"github.com/google/uuid"
 )
 
+type HealthResponse struct {
+	Status string `json:"status" example:"ok"`
+	Module string `json:"module" example:"campus"`
+}
+
 type Response struct {
 	ID        uuid.UUID `json:"id"`
 	Name      string    `json:"name"`

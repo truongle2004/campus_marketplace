@@ -24,7 +24,7 @@ func NewHandler(service CampusService) *Handler {
 //	@Produce		json
 //	@Success		200	{array}		Response
 //	@Failure		500	{object}	respond.ErrorBody
-//	@Router			/campuses [get]
+//	@Router			/api/v1/campuses [get]
 func (h *Handler) ListActive(c *gin.Context) {
 	items, err := h.service.ListActive(c.Request.Context())
 	if err != nil {
@@ -44,7 +44,7 @@ func (h *Handler) ListActive(c *gin.Context) {
 //	@Failure		400	{object}	respond.ErrorBody
 //	@Failure		404	{object}	respond.ErrorBody
 //	@Failure		500	{object}	respond.ErrorBody
-//	@Router			/campuses/{id} [get]
+//	@Router			/api/v1/campuses/{id} [get]
 func (h *Handler) GetByID(c *gin.Context) {
 	item, err := h.service.GetByID(c.Request.Context(), c.Param("id"))
 	if err != nil {
@@ -62,9 +62,17 @@ func (h *Handler) GetByID(c *gin.Context) {
 	respond.OK(c, item)
 }
 
+// Health godoc
+//
+//	@Summary		Health check
+//	@Description	Returns API liveness status.
+//	@Tags			health
+//	@Produce		json
+//	@Success		200	{object}	HealthResponse
+//	@Router			/health [get]
 func (h *Handler) Health(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{
-		"status": "ok",
-		"module": "campus",
+	c.JSON(http.StatusOK, HealthResponse{
+		Status: "ok",
+		Module: "campus",
 	})
 }

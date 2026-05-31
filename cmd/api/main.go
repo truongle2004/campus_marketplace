@@ -37,6 +37,11 @@ func gracefulShutdown(apiServer *http.Server, done chan bool) {
 //	@description	API server for Campus Marketplace
 //	@host			localhost:8080
 //	@BasePath		/
+//
+//	@securityDefinitions.apikey	BearerAuth
+//	@in							header
+//	@name						Authorization
+//	@description				Clerk JWT. Format: Bearer {token}
 
 func main() {
 	app, err := di.InitializeApp()
